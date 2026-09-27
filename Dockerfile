@@ -15,6 +15,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     texlive-latex-extra \
     texlive-science \
     texlive-pictures \
+    texlive-plain-generic \
     texlive-fonts-recommended \
     dvisvgm \
     && rm -rf /var/lib/apt/lists/*
@@ -25,6 +26,8 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY --chown=latexar:latexar . .
 USER latexar
+# Exercise chemfig's dependencies and PDF-to-SVG conversion before publishing.
+RUN python -c 'from renderer import render; from schemas import RenderType; render(r"\chemfig{*6(-=-=-=)}", RenderType.CHEMISTRY)'
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)" || exit 1

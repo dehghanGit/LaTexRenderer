@@ -60,12 +60,23 @@ LATEXAR_MAX_INPUT_LENGTH=10000
 
 Append `?raw=true` to a render endpoint to return `image/svg+xml` directly.
 
+The image includes `texlive-plain-generic`, which supplies `simplekv.tex` required by `chemfig`. Each image build renders a benzene molecule to SVG to check the chemistry dependencies and conversion. If an older deployment reports a missing `simplekv.tex`, rebuild the image and redeploy it in Coolify.
+
 ### Test
 
 ```bash
 curl -X POST 'https://YOUR-DOMAIN/render/math?raw=true' \
   -H 'Content-Type: application/json' \
   -d '{"latex":"e^{i\\pi} + 1 = 0","type":"math","display_mode":true,"options":{}}'
+```
+
+Chemistry example (use `--fail-with-body` so an HTTP error is reported instead of silently saving JSON as an SVG):
+
+```bash
+curl --fail-with-body 'https://YOUR-DOMAIN/render/chemistry?raw=true' \
+  -H 'Content-Type: application/json' \
+  -d '{"latex":"\\chemfig{*6(-=-=-=)}","type":"chemistry","display_mode":true,"options":{}}' \
+  -o benzene.svg
 ```
 
 ## Security notes
