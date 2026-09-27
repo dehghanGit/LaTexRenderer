@@ -4,6 +4,31 @@ FastAPI LaTeX → SVG renderer extracted from the supplied Colab notebook. It su
 
 ## Coolify
 
+### Build with GitHub Actions
+
+The workflow in `.github/workflows/docker-build.yml` builds the existing Dockerfile on pull requests to `main`. Pushes to `main`, tags beginning with `v`, and manual runs also publish the image to GitHub Container Registry using the automatic `GITHUB_TOKEN`; no additional build secrets are required.
+
+After committing and pushing the workflow, open the repository's **Actions** tab to see the build. The image for this repository is:
+
+```text
+ghcr.io/dehghangit/latexrenderer:latest
+```
+
+`latest` follows the default branch. Builds also receive branch/tag and `sha-…` tags so you can deploy a specific revision. The image targets Linux AMD64.
+
+To deploy the prebuilt image in Coolify:
+
+1. Create **New Resource → Application → Docker Image**.
+2. Set the image to `ghcr.io/dehghangit/latexrenderer` and the tag to `latest` (or a specific version/SHA tag).
+3. Set the application port to `8000` and health check path to `/health`.
+4. Deploy, then redeploy when you want to pull a newly published image.
+
+GitHub container packages initially default to private visibility. For unauthenticated pulls, change the package visibility to public in GitHub's package settings. Otherwise, configure Coolify's registry credentials with a GitHub username and a personal access token with `read:packages` access.
+
+The workflow uses Docker's [GitHub Actions integration](https://docs.docker.com/build/ci/github-actions/push-multi-registries/) and GitHub's [container publishing authentication](https://docs.github.com/en/actions/tutorials/publish-packages/publish-docker-images).
+
+### Build directly in Coolify
+
 1. Put this directory in a Git repository (GitHub/GitLab/Gitea etc.).
 2. In Coolify, create **New Resource → Application → Public/Private Repository**.
 3. Select **Dockerfile** as the build pack. Coolify should detect port `8000`.
