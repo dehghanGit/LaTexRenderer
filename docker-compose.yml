@@ -1,0 +1,14 @@
+services:
+  latexar:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      LATEXAR_CACHE_MAX_SIZE: "200"
+      LATEXAR_COMPILE_TIMEOUT: "30"
+      LATEXAR_SHELL_ESCAPE: "false"
+    mem_limit: 1g
+    cpus: 1.0
+    security_opt:
+      - no-new-privileges:true
